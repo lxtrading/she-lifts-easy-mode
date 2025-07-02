@@ -4,13 +4,24 @@ import { Card, CardContent, CardHeader, CardTitle } from './ui/card';
 import { Button } from './ui/button';
 import { Input } from './ui/input';
 import { Badge } from './ui/badge';
-import { User, Target, Trophy, Heart } from 'lucide-react';
+import { User, Target, Trophy, Heart, Clock, Calendar } from 'lucide-react';
 
 interface UserProfile {
   name: string;
   goal: string;
   level: string;
   favoriteWorkout: string;
+}
+
+interface WorkoutSession {
+  id: string;
+  date: string;
+  category: string;
+  categoryName: string;
+  completedSets: number;
+  totalSets: number;
+  duration: number;
+  timestamp: string;
 }
 
 export const ProfileScreen: React.FC = () => {
@@ -21,11 +32,18 @@ export const ProfileScreen: React.FC = () => {
     favoriteWorkout: ''
   });
   const [isEditing, setIsEditing] = useState(false);
+  const [workoutHistory, setWorkoutHistory] = useState<WorkoutSession[]>([]);
 
   useEffect(() => {
     const savedProfile = localStorage.getItem('userProfile');
     if (savedProfile) {
       setProfile(JSON.parse(savedProfile));
+    }
+
+    const savedHistory = localStorage.getItem('userWorkoutHistory');
+    if (savedHistory) {
+      const history = JSON.parse(savedHistory);
+      setWorkoutHistory(history.slice(-5)); // Show last 5 workouts
     }
   }, []);
 
@@ -43,6 +61,14 @@ export const ProfileScreen: React.FC = () => {
   ];
 
   const todayQuote = fitnessQuotes[new Date().getDay() % fitnessQuotes.length];
+
+  // Calculate total workouts this week
+  const thisWeekWorkouts = workoutHistory.filter(workout => {
+    const workoutDate = new Date(workout.date);
+    const weekAgo = new Date();
+    weekAgo.setDate(weekAgo.getDate() - 7);
+    return workoutDate >= weekAgo;
+  }).length;
 
   return (
     <div className="space-y-6">
@@ -129,19 +155,52 @@ export const ProfileScreen: React.FC = () => {
         <Card className="text-center">
           <CardContent className="p-4">
             <Target className="text-blue-500 mx-auto mb-2" size={24} />
-            <h3 className="font-semibold mb-1">Weekly Goal</h3>
-            <p className="text-sm text-gray-600 dark:text-gray-300">3 workouts</p>
+            <h3 className="font-semibold mb-1">This Week</h3>
+            <p className="text-sm text-gray-600 dark:text-gray-300">{thisWeekWorkouts} workouts</p>
           </CardContent>
         </Card>
 
         <Card className="text-center">
           <CardContent className="p-4">
             <Trophy className="text-yellow-500 mx-auto mb-2" size={24} />
-            <h3 className="font-semibold mb-1">Level</h3>
-            <p className="text-sm text-gray-600 dark:text-gray-300 capitalize">{profile.level}</p>
+            <h3 className="font-semibold mb-1">Total</h3>
+            <p className="text-sm text-gray-600 dark:text-gray-300">{workoutHistory.length} workouts</p>
           </CardContent>
         </Card>
       </div>
+
+      {/* Recent Workouts */}
+      {workoutHistory.length > 0 && (
+        <Card>
+          <CardHeader>
+            <CardTitle className="flex items-center">
+              <Calendar className="mr-2" size={20} />
+              Recent Workouts
+            </CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="space-y-3">
+              {workoutHistory.slice().reverse().map((workout) => (
+                <div key={workout.id} className="flex items-center justify-between p-3 bg-gray-50 dark:bg-gray-800 rounded-lg">
+                  <div>
+                    <h4 className="font-medium">{workout.categoryName}</h4>
+                    <p className="text-sm text-gray-600 dark:text-gray-300">
+                      {workout.completedSets}/{workout.totalSets} sets completed
+                    </p>
+                  </div>
+                  <div className="text-right">
+                    <p className="text-sm font-medium">{workout.date}</p>
+                    <div className="flex items-center text-xs text-gray-500">
+                      <Clock size={12} className="mr-1" />
+                      {workout.duration}min
+                    </div>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </CardContent>
+        </Card>
+      )}
 
       {/* Beginner Tips */}
       <Card className="bg-gradient-to-r from-blue-50 to-cyan-50 dark:from-blue-900/20 dark:to-cyan-900/20 border-blue-200 dark:border-blue-800">

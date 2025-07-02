@@ -1,4 +1,5 @@
-import React, { useState } from 'react';
+
+import React, { useState, useEffect } from 'react';
 import { Button } from './ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from './ui/card';
 import { ExerciseCard } from './ExerciseCard';
@@ -218,9 +219,17 @@ export const WorkoutScreen: React.FC<WorkoutScreenProps> = ({ category, onBack }
   const [completedSets, setCompletedSets] = useState<Record<string, number>>({});
   const [isResting, setIsResting] = useState(false);
   const [restTime, setRestTime] = useState(0);
+  const [workoutStartTime, setWorkoutStartTime] = useState<Date | null>(null);
 
   const exercises = exerciseData[category] || [];
   const categoryName = category.charAt(0).toUpperCase() + category.slice(1).replace('-', ' ');
+
+  // Start workout timer when first exercise begins
+  useEffect(() => {
+    if (currentExercise !== null && workoutStartTime === null) {
+      setWorkoutStartTime(new Date());
+    }
+  }, [currentExercise, workoutStartTime]);
 
   const handleStartExercise = (index: number) => {
     setCurrentExercise(index);
@@ -248,9 +257,46 @@ export const WorkoutScreen: React.FC<WorkoutScreenProps> = ({ category, onBack }
     setRestTime(0);
   };
 
+  const saveWorkoutSession = () => {
+    if (!workoutStartTime) return;
+
+    const workoutSession = {
+      id: Date.now().toString(),
+      date: new Date().toISOString().split('T')[0],
+      category,
+      categoryName,
+      completedSets: Object.values(completedSets).reduce((sum, sets) => sum + sets, 0),
+      totalSets: exercises.reduce((sum, exercise) => sum + exercise.sets, 0),
+      exercises: exercises.map(exercise => ({
+        name: exercise.name,
+        completedSets: completedSets[exercise.id] || 0,
+        totalSets: exercise.sets
+      })),
+      duration: Math.round((new Date().getTime() - workoutStartTime.getTime()) / 1000 / 60), // in minutes
+      timestamp: new Date().toISOString()
+    };
+
+    // Save to workout logs
+    const existingLogs = JSON.parse(localStorage.getItem('workoutLogs') || '[]');
+    const updatedLogs = [...existingLogs, workoutSession];
+    localStorage.setItem('workoutLogs', JSON.stringify(updatedLogs));
+
+    // Save to user's workout history
+    const existingHistory = JSON.parse(localStorage.getItem('userWorkoutHistory') || '[]');
+    const updatedHistory = [...existingHistory, workoutSession];
+    localStorage.setItem('userWorkoutHistory', JSON.stringify(updatedHistory));
+  };
+
   const totalSets = exercises.reduce((sum, exercise) => sum + exercise.sets, 0);
   const completedSetsCount = Object.values(completedSets).reduce((sum, sets) => sum + sets, 0);
   const progressPercentage = (completedSetsCount / totalSets) * 100;
+
+  // Auto-save when workout is completed
+  useEffect(() => {
+    if (progressPercentage === 100 && workoutStartTime) {
+      saveWorkoutSession();
+    }
+  }, [progressPercentage, workoutStartTime]);
 
   return (
     <div className="space-y-6">
@@ -309,6 +355,10 @@ export const WorkoutScreen: React.FC<WorkoutScreenProps> = ({ category, onBack }
           <CardContent className="p-6 text-center">
             <h2 className="text-2xl font-bold mb-2">Workout Complete! 🎉</h2>
             <p className="mb-4">Amazing job! You crushed it today!</p>
+            <div className="bg-white/20 rounded-lg p-4 mb-4">
+              <h3 className="font-semibold mb-2">Workout Saved! ✅</h3>
+              <p className="text-sm">Your progress has been automatically saved to your profile.</p>
+            </div>
             <div className="bg-white/20 rounded-lg p-4">
               <h3 className="font-semibold mb-2">Cool Down Reminder</h3>
               <p className="text-sm">Don't forget to stretch! Hold each stretch for 15-30 seconds to help your muscles recover.</p>
