@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { Button } from './ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from './ui/card';
@@ -49,6 +48,42 @@ const exerciseData: Record<string, Exercise[]> = {
       reps: '10-12 each side',
       restTime: 45,
       tips: 'Keep your lower back pressed to the floor throughout the movement.'
+    },
+    {
+      id: 'mountain-climbers',
+      name: 'Mountain Climbers',
+      description: 'Run in place in plank position',
+      sets: 3,
+      reps: '20-30 seconds',
+      restTime: 60,
+      tips: 'Keep your core engaged and bring knees to chest alternately.'
+    },
+    {
+      id: 'russian-twists',
+      name: 'Russian Twists',
+      description: 'Sit and rotate torso side to side',
+      sets: 3,
+      reps: '15-20 each side',
+      restTime: 45,
+      tips: 'Lean back slightly and lift feet for extra challenge. Keep chest up!'
+    },
+    {
+      id: 'leg-raises',
+      name: 'Leg Raises',
+      description: 'Lie on back and lift legs up',
+      sets: 3,
+      reps: '12-15',
+      restTime: 45,
+      tips: 'Keep your lower back pressed down and lift legs slowly and controlled.'
+    },
+    {
+      id: 'hollow-hold',
+      name: 'Hollow Hold',
+      description: 'Hold body in banana shape',
+      sets: 3,
+      reps: '20-30 seconds',
+      restTime: 60,
+      tips: 'Press lower back into floor and hold the hollow position. Breathe normally!'
     }
   ],
   'lower-back': [
@@ -129,6 +164,51 @@ const exerciseData: Record<string, Exercise[]> = {
       reps: '30 seconds',
       restTime: 60,
       tips: 'Pump your arms and try to bring your knees to hip level.'
+    },
+    {
+      id: 'treadmill-walk',
+      name: 'Treadmill Walking',
+      description: 'Brisk walk with incline for fat burning',
+      sets: 1,
+      reps: '15-30 minutes',
+      restTime: 0,
+      tips: 'Start at 3-4 mph with 2-5% incline. Increase gradually as you get stronger!'
+    },
+    {
+      id: 'treadmill-intervals',
+      name: 'Treadmill Intervals',
+      description: 'Alternate between walking and jogging',
+      sets: 5,
+      reps: '1 min jog, 2 min walk',
+      restTime: 0,
+      tips: 'Start conservatively! Jog at comfortable pace, then recover with brisk walk.'
+    },
+    {
+      id: 'stationary-bike',
+      name: 'Stationary Bike',
+      description: 'Steady cycling for cardio endurance',
+      sets: 1,
+      reps: '20-45 minutes',
+      restTime: 0,
+      tips: 'Keep moderate resistance. You should be able to hold a conversation!'
+    },
+    {
+      id: 'bike-intervals',
+      name: 'Bike Intervals',
+      description: 'High intensity cycling bursts',
+      sets: 6,
+      reps: '30 sec hard, 90 sec easy',
+      restTime: 0,
+      tips: 'Push hard during intervals, then recover completely. Build up gradually!'
+    },
+    {
+      id: 'burpees',
+      name: 'Burpees',
+      description: 'Full body explosive movement',
+      sets: 3,
+      reps: '5-10 reps',
+      restTime: 90,
+      tips: 'Start with modified version (no jump) if needed. Focus on smooth transitions!'
     }
   ]
 };
