@@ -1,13 +1,48 @@
-// Update this page (the content is just a fallback if you fail to update the page)
+
+import React, { useState } from 'react';
+import { Layout } from '../components/Layout';
+import { HomeScreen } from '../components/HomeScreen';
+import { WorkoutScreen } from '../components/WorkoutScreen';
+import { ProgressScreen } from '../components/ProgressScreen';
+import { ProfileScreen } from '../components/ProfileScreen';
 
 const Index = () => {
+  const [currentTab, setCurrentTab] = useState('home');
+  const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
+
+  const handleCategorySelect = (category: string) => {
+    setSelectedCategory(category);
+    setCurrentTab('workouts');
+  };
+
+  const handleBackToHome = () => {
+    setSelectedCategory(null);
+    setCurrentTab('home');
+  };
+
+  const renderContent = () => {
+    switch (currentTab) {
+      case 'home':
+        return <HomeScreen onCategorySelect={handleCategorySelect} />;
+      case 'workouts':
+        return selectedCategory ? (
+          <WorkoutScreen category={selectedCategory} onBack={handleBackToHome} />
+        ) : (
+          <HomeScreen onCategorySelect={handleCategorySelect} />
+        );
+      case 'progress':
+        return <ProgressScreen />;
+      case 'profile':
+        return <ProfileScreen />;
+      default:
+        return <HomeScreen onCategorySelect={handleCategorySelect} />;
+    }
+  };
+
   return (
-    <div className="min-h-screen flex items-center justify-center bg-background">
-      <div className="text-center">
-        <h1 className="text-4xl font-bold mb-4">Welcome to Your Blank App</h1>
-        <p className="text-xl text-muted-foreground">Start building your amazing project here!</p>
-      </div>
-    </div>
+    <Layout currentTab={currentTab} onTabChange={setCurrentTab}>
+      {renderContent()}
+    </Layout>
   );
 };
 
