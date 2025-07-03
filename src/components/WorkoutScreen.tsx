@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { Button } from './ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from './ui/card';
@@ -14,6 +13,8 @@ interface Exercise {
   reps: string;
   restTime: number;
   tips: string;
+  illustration: string;
+  detailedInstructions: string[];
 }
 
 interface WorkoutScreenProps {
@@ -30,7 +31,15 @@ const exerciseData: Record<string, Exercise[]> = {
       sets: 3,
       reps: '30-60 seconds',
       restTime: 60,
-      tips: 'Keep your core tight and body straight. Don\'t let your hips sag!'
+      tips: 'Keep your core tight and body straight. Don\'t let your hips sag!',
+      illustration: 'https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b',
+      detailedInstructions: [
+        'Start in a push-up position with forearms on the ground',
+        'Keep your body in a straight line from head to heels',
+        'Engage your core muscles and squeeze your glutes',
+        'Hold the position while breathing normally',
+        'Don\'t let your hips drop or pike up'
+      ]
     },
     {
       id: 'bicycle-crunches',
@@ -39,7 +48,15 @@ const exerciseData: Record<string, Exercise[]> = {
       sets: 3,
       reps: '15-20 each side',
       restTime: 45,
-      tips: 'Slow and controlled movements. Focus on the twist!'
+      tips: 'Slow and controlled movements. Focus on the twist!',
+      illustration: 'https://images.unsplash.com/photo-1594737626795-f0d6ca2d6d51',
+      detailedInstructions: [
+        'Lie on your back with hands behind your head',
+        'Lift your shoulder blades off the ground',
+        'Bring your right elbow toward your left knee',
+        'Extend your right leg while twisting',
+        'Alternate sides in a pedaling motion'
+      ]
     },
     {
       id: 'dead-bug',
@@ -48,7 +65,15 @@ const exerciseData: Record<string, Exercise[]> = {
       sets: 3,
       reps: '10-12 each side',
       restTime: 45,
-      tips: 'Keep your lower back pressed to the floor throughout the movement.'
+      tips: 'Keep your lower back pressed to the floor throughout the movement.',
+      illustration: 'https://images.unsplash.com/photo-1538805060514-97d9cc17730c',
+      detailedInstructions: [
+        'Lie on your back with arms extended toward ceiling',
+        'Bend knees 90 degrees, shins parallel to floor',
+        'Slowly lower opposite arm and leg toward floor',
+        'Keep your core engaged and back flat',
+        'Return to starting position and switch sides'
+      ]
     },
     {
       id: 'mountain-climbers',
@@ -57,7 +82,15 @@ const exerciseData: Record<string, Exercise[]> = {
       sets: 3,
       reps: '20-30 seconds',
       restTime: 60,
-      tips: 'Keep your core engaged and bring knees to chest alternately.'
+      tips: 'Keep your core engaged and bring knees to chest alternately.',
+      illustration: 'https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b',
+      detailedInstructions: [
+        'Start in a plank position with hands under shoulders',
+        'Keep your core tight and body straight',
+        'Quickly alternate bringing knees to chest',
+        'Land softly on balls of feet',
+        'Maintain steady breathing throughout'
+      ]
     },
     {
       id: 'russian-twists',
@@ -66,7 +99,15 @@ const exerciseData: Record<string, Exercise[]> = {
       sets: 3,
       reps: '15-20 each side',
       restTime: 45,
-      tips: 'Lean back slightly and lift feet for extra challenge. Keep chest up!'
+      tips: 'Lean back slightly and lift feet for extra challenge. Keep chest up!',
+      illustration: 'https://images.unsplash.com/photo-1594737626795-f0d6ca2d6d51',
+      detailedInstructions: [
+        'Sit with knees bent and feet flat on floor',
+        'Lean back slightly, keeping chest up',
+        'Lift feet off ground for advanced version',
+        'Rotate torso to touch floor beside hip',
+        'Alternate sides with controlled movement'
+      ]
     },
     {
       id: 'leg-raises',
@@ -75,7 +116,15 @@ const exerciseData: Record<string, Exercise[]> = {
       sets: 3,
       reps: '12-15',
       restTime: 45,
-      tips: 'Keep your lower back pressed down and lift legs slowly and controlled.'
+      tips: 'Keep your lower back pressed down and lift legs slowly and controlled.',
+      illustration: 'https://images.unsplash.com/photo-1538805060514-97d9cc17730c',
+      detailedInstructions: [
+        'Lie flat on your back with legs straight',
+        'Place hands under lower back for support',
+        'Keep legs straight and lift to 90 degrees',
+        'Lower legs slowly without touching floor',
+        'Keep lower back pressed to ground'
+      ]
     },
     {
       id: 'hollow-hold',
@@ -84,7 +133,15 @@ const exerciseData: Record<string, Exercise[]> = {
       sets: 3,
       reps: '20-30 seconds',
       restTime: 60,
-      tips: 'Press lower back into floor and hold the hollow position. Breathe normally!'
+      tips: 'Press lower back into floor and hold the hollow position. Breathe normally!',
+      illustration: 'https://images.unsplash.com/photo-1538805060514-97d9cc17730c',
+      detailedInstructions: [
+        'Lie on your back with arms overhead',
+        'Press lower back firmly into floor',
+        'Lift shoulders and legs off ground',
+        'Create a banana or hollow shape',
+        'Hold position while breathing normally'
+      ]
     }
   ],
   'lower-back': [
@@ -95,7 +152,15 @@ const exerciseData: Record<string, Exercise[]> = {
       sets: 3,
       reps: '12-15',
       restTime: 45,
-      tips: 'Lift slowly and squeeze your glutes and lower back muscles.'
+      tips: 'Lift slowly and squeeze your glutes and lower back muscles.',
+      illustration: 'https://images.unsplash.com/photo-1544367567-0f2fcb009e0b',
+      detailedInstructions: [
+        'Lie face down with arms extended forward',
+        'Keep your neck in neutral position',
+        'Simultaneously lift chest, arms, and legs',
+        'Squeeze glutes and lower back muscles',
+        'Hold for 2-3 seconds, then lower slowly'
+      ]
     },
     {
       id: 'bird-dog',
@@ -104,7 +169,15 @@ const exerciseData: Record<string, Exercise[]> = {
       sets: 3,
       reps: '10-12 each side',
       restTime: 45,
-      tips: 'Keep your hips level and core engaged throughout the movement.'
+      tips: 'Keep your hips level and core engaged throughout the movement.',
+      illustration: 'https://images.unsplash.com/photo-1538805060514-97d9cc17730c',
+      detailedInstructions: [
+        'Start on hands and knees in tabletop position',
+        'Keep your spine neutral and core engaged',
+        'Extend opposite arm and leg simultaneously',
+        'Hold for 3-5 seconds maintaining balance',
+        'Return to start and switch sides'
+      ]
     }
   ],
   legs: [
@@ -115,7 +188,15 @@ const exerciseData: Record<string, Exercise[]> = {
       sets: 3,
       reps: '12-15',
       restTime: 60,
-      tips: 'Keep your knees behind your toes and weight in your heels.'
+      tips: 'Keep your knees behind your toes and weight in your heels.',
+      illustration: 'https://images.unsplash.com/photo-1574680096145-d05b474e2155',
+      detailedInstructions: [
+        'Stand with feet shoulder-width apart',
+        'Keep your chest up and core engaged',
+        'Sit back as if sitting in a chair',
+        'Lower until thighs are parallel to floor',
+        'Push through heels to return to standing'
+      ]
     },
     {
       id: 'lunges',
@@ -124,7 +205,15 @@ const exerciseData: Record<string, Exercise[]> = {
       sets: 3,
       reps: '10-12 each leg',
       restTime: 60,
-      tips: 'Take a big step forward and keep your front knee over your ankle.'
+      tips: 'Take a big step forward and keep your front knee over your ankle.',
+      illustration: 'https://images.unsplash.com/photo-1574680096145-d05b474e2155',
+      detailedInstructions: [
+        'Stand tall with feet hip-width apart',
+        'Step forward with one leg into lunge',
+        'Lower back knee toward floor',
+        'Keep front knee over ankle',
+        'Push back to starting position'
+      ]
     }
   ],
   glutes: [
@@ -135,7 +224,15 @@ const exerciseData: Record<string, Exercise[]> = {
       sets: 3,
       reps: '15-20',
       restTime: 45,
-      tips: 'Squeeze your glutes at the top and keep your core tight.'
+      tips: 'Squeeze your glutes at the top and keep your core tight.',
+      illustration: 'https://images.unsplash.com/photo-1538805060514-97d9cc17730c',
+      detailedInstructions: [
+        'Lie on back with knees bent, feet flat',
+        'Keep feet hip-width apart',
+        'Squeeze glutes and lift hips up',
+        'Create straight line from knees to shoulders',
+        'Hold for 2 seconds, then lower slowly'
+      ]
     },
     {
       id: 'clamshells',
@@ -144,7 +241,15 @@ const exerciseData: Record<string, Exercise[]> = {
       sets: 3,
       reps: '12-15 each side',
       restTime: 45,
-      tips: 'Keep your feet together and focus on using your glute muscles.'
+      tips: 'Keep your feet together and focus on using your glute muscles.',
+      illustration: 'https://images.unsplash.com/photo-1544367567-0f2fcb009e0b',
+      detailedInstructions: [
+        'Lie on your side with knees bent 45 degrees',
+        'Keep feet and hips stacked',
+        'Lift top knee while keeping feet together',
+        'Focus on using glute muscles',
+        'Lower with control and repeat'
+      ]
     }
   ],
   cardio: [
@@ -155,7 +260,15 @@ const exerciseData: Record<string, Exercise[]> = {
       sets: 3,
       reps: '30-45 seconds',
       restTime: 60,
-      tips: 'Land softly on the balls of your feet and keep a steady rhythm.'
+      tips: 'Land softly on the balls of your feet and keep a steady rhythm.',
+      illustration: 'https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b',
+      detailedInstructions: [
+        'Stand with feet together, arms at sides',
+        'Jump feet apart while raising arms overhead',
+        'Land softly on balls of feet',
+        'Jump back to starting position',
+        'Maintain steady rhythm throughout'
+      ]
     },
     {
       id: 'high-knees',
@@ -164,7 +277,15 @@ const exerciseData: Record<string, Exercise[]> = {
       sets: 3,
       reps: '30 seconds',
       restTime: 60,
-      tips: 'Pump your arms and try to bring your knees to hip level.'
+      tips: 'Pump your arms and try to bring your knees to hip level.',
+      illustration: 'https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b',
+      detailedInstructions: [
+        'Stand tall with feet hip-width apart',
+        'Run in place lifting knees to hip level',
+        'Pump arms naturally as you run',
+        'Land on balls of feet',
+        'Keep core engaged throughout'
+      ]
     },
     {
       id: 'treadmill-walk',
@@ -173,7 +294,15 @@ const exerciseData: Record<string, Exercise[]> = {
       sets: 1,
       reps: '15-30 minutes',
       restTime: 0,
-      tips: 'Start at 3-4 mph with 2-5% incline. Increase gradually as you get stronger!'
+      tips: 'Start at 3-4 mph with 2-5% incline. Increase gradually as you get stronger!',
+      illustration: 'https://images.unsplash.com/photo-1544367567-0f2fcb009e0b',
+      detailedInstructions: [
+        'Start with 5-minute warm-up at easy pace',
+        'Set speed to 3-4 mph with 2-5% incline',
+        'Maintain upright posture, don\'t lean on rails',
+        'Swing arms naturally at your sides',
+        'Cool down with 5 minutes at slower pace'
+      ]
     },
     {
       id: 'treadmill-intervals',
@@ -182,7 +311,15 @@ const exerciseData: Record<string, Exercise[]> = {
       sets: 5,
       reps: '1 min jog, 2 min walk',
       restTime: 0,
-      tips: 'Start conservatively! Jog at comfortable pace, then recover with brisk walk.'
+      tips: 'Start conservatively! Jog at comfortable pace, then recover with brisk walk.',
+      illustration: 'https://images.unsplash.com/photo-1544367567-0f2fcb009e0b',
+      detailedInstructions: [
+        'Warm up with 5 minutes of walking',
+        'Jog for 1 minute at comfortable pace',
+        'Recover with 2 minutes brisk walking',
+        'Repeat the cycle 5 times',
+        'Cool down with 5 minutes easy walking'
+      ]
     },
     {
       id: 'stationary-bike',
@@ -191,7 +328,15 @@ const exerciseData: Record<string, Exercise[]> = {
       sets: 1,
       reps: '20-45 minutes',
       restTime: 0,
-      tips: 'Keep moderate resistance. You should be able to hold a conversation!'
+      tips: 'Keep moderate resistance. You should be able to hold a conversation!',
+      illustration: 'https://images.unsplash.com/photo-1544367567-0f2fcb009e0b',
+      detailedInstructions: [
+        'Adjust seat height so leg is slightly bent at bottom',
+        'Start with 5-minute easy warm-up',
+        'Maintain moderate resistance throughout',
+        'Keep steady cadence of 70-90 RPM',
+        'Cool down with 5 minutes easy pedaling'
+      ]
     },
     {
       id: 'bike-intervals',
@@ -200,7 +345,51 @@ const exerciseData: Record<string, Exercise[]> = {
       sets: 6,
       reps: '30 sec hard, 90 sec easy',
       restTime: 0,
-      tips: 'Push hard during intervals, then recover completely. Build up gradually!'
+      tips: 'Push hard during intervals, then recover completely. Build up gradually!',
+      illustration: 'https://images.unsplash.com/photo-1544367567-0f2fcb009e0b',
+      detailedInstructions: [
+        'Warm up with 10 minutes easy cycling',
+        'Sprint hard for 30 seconds',
+        'Recover with 90 seconds easy pedaling',
+        'Repeat cycle 6 times',
+        'Cool down with 10 minutes easy cycling'
+      ]
+    },
+    {
+      id: 'elliptical-steady',
+      name: 'Elliptical Machine',
+      description: 'Low-impact full body cardio workout',
+      sets: 1,
+      reps: '20-45 minutes',
+      restTime: 0,
+      tips: 'Use both arms and legs. Keep moderate resistance for steady-state cardio.',
+      illustration: 'https://images.unsplash.com/photo-1544367567-0f2fcb009e0b',
+      detailedInstructions: [
+        'Step onto pedals and grab moving handles',
+        'Start with 5-minute easy warm-up',
+        'Maintain moderate resistance and steady pace',
+        'Use both upper and lower body',
+        'Keep upright posture throughout',
+        'Cool down with 5 minutes at easy pace'
+      ]
+    },
+    {
+      id: 'elliptical-intervals',
+      name: 'Elliptical Intervals',
+      description: 'High intensity elliptical training',
+      sets: 8,
+      reps: '45 sec hard, 75 sec easy',
+      restTime: 0,
+      tips: 'Increase resistance and speed during hard intervals. Focus on full body movement!',
+      illustration: 'https://images.unsplash.com/photo-1544367567-0f2fcb009e0b',
+      detailedInstructions: [
+        'Warm up with 10 minutes moderate pace',
+        'Increase resistance and speed for 45 seconds',
+        'Push with both arms and legs during hard phase',
+        'Recover with 75 seconds at easy pace',
+        'Repeat cycle 8 times',
+        'Cool down with 10 minutes easy pace'
+      ]
     },
     {
       id: 'burpees',
@@ -209,7 +398,15 @@ const exerciseData: Record<string, Exercise[]> = {
       sets: 3,
       reps: '5-10 reps',
       restTime: 90,
-      tips: 'Start with modified version (no jump) if needed. Focus on smooth transitions!'
+      tips: 'Start with modified version (no jump) if needed. Focus on smooth transitions!',
+      illustration: 'https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b',
+      detailedInstructions: [
+        'Start standing with feet shoulder-width apart',
+        'Squat down and place hands on floor',
+        'Jump feet back into plank position',
+        'Do a push-up (optional for beginners)',
+        'Jump feet back to squat, then jump up with arms overhead'
+      ]
     }
   ]
 };

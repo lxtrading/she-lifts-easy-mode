@@ -3,7 +3,7 @@ import React from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from './ui/card';
 import { Button } from './ui/button';
 import { Badge } from './ui/badge';
-import { CheckCircle, PlayCircle } from 'lucide-react';
+import { CheckCircle, PlayCircle, Info } from 'lucide-react';
 
 interface Exercise {
   id: string;
@@ -13,6 +13,8 @@ interface Exercise {
   reps: string;
   restTime: number;
   tips: string;
+  illustration: string;
+  detailedInstructions: string[];
 }
 
 interface ExerciseCardProps {
@@ -50,6 +52,19 @@ export const ExerciseCard: React.FC<ExerciseCardProps> = ({
       </CardHeader>
       
       <CardContent className="space-y-4">
+        {/* Exercise Illustration */}
+        <div className="w-full h-48 bg-gray-100 dark:bg-gray-800 rounded-lg overflow-hidden">
+          <img
+            src={exercise.illustration}
+            alt={`${exercise.name} demonstration`}
+            className="w-full h-full object-cover"
+            onError={(e) => {
+              const target = e.target as HTMLImageElement;
+              target.src = 'https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?w=400&h=300&fit=crop';
+            }}
+          />
+        </div>
+
         <div className="grid grid-cols-2 gap-4 text-sm">
           <div>
             <span className="font-medium">Reps: </span>
@@ -62,10 +77,29 @@ export const ExerciseCard: React.FC<ExerciseCardProps> = ({
         </div>
 
         {isActive && (
-          <div className="bg-blue-50 dark:bg-blue-900/20 p-3 rounded-lg">
-            <h4 className="font-medium text-blue-800 dark:text-blue-200 mb-1">💡 Form Tip</h4>
-            <p className="text-sm text-blue-700 dark:text-blue-300">{exercise.tips}</p>
-          </div>
+          <>
+            <div className="bg-blue-50 dark:bg-blue-900/20 p-3 rounded-lg">
+              <h4 className="font-medium text-blue-800 dark:text-blue-200 mb-1 flex items-center">
+                <Info size={16} className="mr-2" />
+                Form Tip
+              </h4>
+              <p className="text-sm text-blue-700 dark:text-blue-300">{exercise.tips}</p>
+            </div>
+
+            <div className="bg-purple-50 dark:bg-purple-900/20 p-3 rounded-lg">
+              <h4 className="font-medium text-purple-800 dark:text-purple-200 mb-2">Step-by-Step Instructions</h4>
+              <ol className="text-sm text-purple-700 dark:text-purple-300 space-y-1">
+                {exercise.detailedInstructions.map((instruction, index) => (
+                  <li key={index} className="flex">
+                    <span className="font-medium mr-2 text-purple-600 dark:text-purple-400">
+                      {index + 1}.
+                    </span>
+                    <span>{instruction}</span>
+                  </li>
+                ))}
+              </ol>
+            </div>
+          </>
         )}
 
         <div className="flex gap-2">
