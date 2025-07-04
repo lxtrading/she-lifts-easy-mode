@@ -1,16 +1,20 @@
-
 import React, { useState, useEffect } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from './ui/card';
 import { Button } from './ui/button';
 import { Input } from './ui/input';
 import { Badge } from './ui/badge';
-import { User, Target, Trophy, Heart, Clock, Calendar } from 'lucide-react';
+import { User, Target, Trophy, Heart, Clock, Calendar, Camera, Upload } from 'lucide-react';
+import { Avatar, AvatarImage, AvatarFallback } from './ui/avatar';
+import { supabase } from '@/integrations/supabase/client';
+import { WorkoutVideoGallery } from './WorkoutVideoGallery';
+import { toast } from 'sonner';
 
 interface UserProfile {
   name: string;
   goal: string;
   level: string;
   favoriteWorkout: string;
+  profilePicture?: string;
 }
 
 interface WorkoutSession {
@@ -29,10 +33,12 @@ export const ProfileScreen: React.FC = () => {
     name: '',
     goal: '',
     level: 'beginner',
-    favoriteWorkout: ''
+    favoriteWorkout: '',
+    profilePicture: ''
   });
   const [isEditing, setIsEditing] = useState(false);
   const [workoutHistory, setWorkoutHistory] = useState<WorkoutSession[]>([]);
+  const [isUploading, setIsUploading] = useState(false);
 
   useEffect(() => {
     const savedProfile = localStorage.getItem('userProfile');
@@ -46,6 +52,50 @@ export const ProfileScreen: React.FC = () => {
       setWorkoutHistory(history.slice(-5)); // Show last 5 workouts
     }
   }, []);
+
+  const handleProfilePictureUpload = async (event: React.ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0];
+    if (!file) return;
+
+    // Check file size (max 5MB)
+    if (file.size > 5 * 1024 * 1024) {
+      toast.error('File size must be less than 5MB');
+      return;
+    }
+
+    // Check file type
+    if (!file.type.startsWith('image/')) {
+      toast.error('Please select an image file');
+      return;
+    }
+
+    setIsUploading(true);
+    
+    try {
+      const fileName = `profile-${Date.now()}-${file.name}`;
+      
+      const { data, error } = await supabase.storage
+        .from('profile-pictures')
+        .upload(fileName, file);
+
+      if (error) throw error;
+
+      const { data: { publicUrl } } = supabase.storage
+        .from('profile-pictures')
+        .getPublicUrl(fileName);
+
+      const updatedProfile = { ...profile, profilePicture: publicUrl };
+      setProfile(updatedProfile);
+      localStorage.setItem('userProfile', JSON.stringify(updatedProfile));
+      
+      toast.success('Profile picture updated successfully!');
+    } catch (error) {
+      console.error('Error uploading profile picture:', error);
+      toast.error('Failed to upload profile picture');
+    } finally {
+      setIsUploading(false);
+    }
+  };
 
   const saveProfile = () => {
     localStorage.setItem('userProfile', JSON.stringify(profile));
@@ -73,13 +123,35 @@ export const ProfileScreen: React.FC = () => {
   return (
     <div className="space-y-6">
       <div className="text-center">
-        <div className="w-20 h-20 bg-gradient-to-r from-pink-400 to-purple-500 rounded-full flex items-center justify-center mx-auto mb-4">
-          <User className="text-white" size={32} />
+        <div className="relative mx-auto mb-4 w-20 h-20">
+          <Avatar className="w-20 h-20">
+            <AvatarImage src={profile.profilePicture} alt="Profile" />
+            <AvatarFallback className="bg-gradient-to-r from-pink-400 to-purple-500 text-white">
+              <User size={32} />
+            </AvatarFallback>
+          </Avatar>
+          <label 
+            htmlFor="profile-picture-upload" 
+            className="absolute -bottom-1 -right-1 bg-primary text-white rounded-full p-1.5 cursor-pointer hover:bg-primary/90 transition-colors"
+          >
+            <Camera size={16} />
+          </label>
+          <input
+            id="profile-picture-upload"
+            type="file"
+            accept="image/*"
+            onChange={handleProfilePictureUpload}
+            className="hidden"
+            disabled={isUploading}
+          />
         </div>
         <h1 className="text-2xl font-bold">
           {profile.name ? `Hi, ${profile.name}!` : 'Welcome to FitGirl!'}
         </h1>
         <p className="text-gray-600 dark:text-gray-300">Your fitness journey starts here</p>
+        {isUploading && (
+          <p className="text-sm text-primary mt-2">Uploading profile picture...</p>
+        )}
       </div>
 
       {/* Daily Motivation */}
@@ -168,6 +240,9 @@ export const ProfileScreen: React.FC = () => {
           </CardContent>
         </Card>
       </div>
+
+      {/* Workout Video Gallery */}
+      <WorkoutVideoGallery />
 
       {/* Recent Workouts */}
       {workoutHistory.length > 0 && (
